@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карточная игра «Дурак»</title>
+    <!-- Подключаем файл со стилями -->
+    <link rel="stylesheet" href="ass.css">
+</head>
+<body>
+
+    <div id="wrapper" class="screen-container">
+
+        <!-- 1. ЭКРАН: ВХОД -->
+        <div id="screen-login" class="screen active">
+            <h1>Дурак Онлайн</h1>
+            <p>Добро пожаловать за игровой стол!</p>
+            <div class="btn-group">
+                <button onclick="changeScreen('screen-auth')">Авторизация</button>
+                <button onclick="changeScreen('screen-register')">Регистрация</button>
+                <button class="secondary" onclick="enterAsGuest()">Войти как гость</button>
+            </div>
+        </div>
+
+        <!-- 2. ЭКРАН: АВТОРИЗАЦИЯ -->
+        <div id="screen-auth" class="screen">
+            <h2>Авторизация</h2>
+            <form onsubmit="handleAuth(event)">
+                <input type="text" id="auth-login" placeholder="Логин" required>
+                <input type="password" id="auth-pass" placeholder="Пароль" required>
+                <div class="btn-group">
+                    <button type="submit">Войти</button>
+                    <button type="button" class="secondary" onclick="changeScreen('screen-login')">Назад</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 3. ЭКРАН: РЕГИСТРАЦИЯ -->
+        <div id="screen-register" class="screen">
+            <h2>Регистрация</h2>
+            <form onsubmit="handleRegister(event)">
+                <input type="text" id="reg-login" placeholder="Придумайте Логин" required>
+                <input type="password" id="reg-pass" placeholder="Придумайте Пароль" required>
+                <div class="btn-group">
+                    <button type="submit">Создать аккаунт</button>
+                    <button type="button" class="secondary" onclick="changeScreen('screen-login')">Назад</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- 4. ЭКРАН: ГЛАВНОЕ МЕНЮ -->
+        <div id="screen-main-menu" class="screen">
+            <h2>Главное Меню</h2>
+            <div class="btn-group">
+                <button onclick="changeScreen('screen-difficulty')">Начать игру</button>
+                <button onclick="changeScreen('screen-profile')">Настройки профиля</button>
+                <button onclick="changeScreen('screen-rules')">Правила игры</button>
+                <button class="danger" onclick="logout()">Выход из аккаунта</button>
+            </div>
+        </div>
+
+        <!-- 5. ЭКРАН: ВЫБОР СЛОЖНОСТИ -->
+        <div id="screen-difficulty" class="screen">
+            <h2>Режим сложности</h2>
+            <p>Выберите уровень мастерства соперников:</p>
+            <select id="difficulty-select">
+                <option value="easy">Новичок (Легкий)</option>
+                <option value="medium">Шулер (Средний)</option>
+                <option value="hard">Магистр (Тяжелый)</option>
+            </select>
+            <div class="btn-group">
+                <button onclick="startGame()">Раздать карты</button>
+                <button class="secondary" onclick="changeScreen('screen-main-menu')">Назад в меню</button>
+            </div>
+        </div>
+
+        <!-- 6. ЭКРАН: НАСТРОЙКИ ПРОФИЛЯ -->
+        <div id="screen-profile" class="screen">
+            <h2>Настройки профиля</h2>
+            <div class="avatar-box" id="avatar-display">👤</div>
+            <p id="nickname-display">Игрок: <strong>Гость</strong></p>
+            <div class="btn-group">
+                <button onclick="manageNickname()">Изменить никнейм</button>
+                <div class="btn-row">
+                    <button class="secondary" onclick="changeAvatar('🃏')">🃏 Карты</button>
+                    <button class="secondary" onclick="changeAvatar('👑')">👑 Корона</button>
+                </div>
+                <button class="danger" onclick="deleteAvatar()">Удалить Аватар</button>
+                <button class="secondary" onclick="changeScreen('screen-main-menu')">Назад в меню</button>
+            </div>
+        </div>
+
+        <!-- 7. ЭКРАН: ПРАВИЛА ИГРЫ -->
+        <div id="screen-rules" class="screen">
+            <h2>Правила игры</h2>
+            <p style="text-align: left; font-size: 0.95rem;">
+                Цель игры — избавиться от всех карт. Последний игрок с картами становится «дураком».<br><br>
+                Каждому раздается по 6 карт. Открывается козырь. Игрок ходит первым. Кликните по карте в вашей руке, чтобы сделать ход. ИИ автоматически попытается отбиться картой старшего ранга той же масти или козырем.
+            </p>
+            <button class="secondary" onclick="changeScreen('screen-main-menu')">Понятно</button>
+        </div>
+
+        <!-- 8. ЭКРАН: ИГРОВОЙ СТОЛ (СЮДА ИДЕТ ИГРА) -->
+        <div id="screen-game-match" class="screen">
+            <div class="game-info-bar">
+                <span>Оппонент: Бот (<span id="current-diff">Легкий</span>)</span>
+                <span>Козырь: <span id="trump-suit-indicator"></span></span>
+            </div>
+
+            <!-- Зона битвы для карт на столе -->
+            <div class="playing-field" id="playing-field"></div>
+
+            <div>
+                <p>Ваш ход: кликните по карте для атаки</p>
+                <!-- Сюда JS выводит карты вашей руки -->
+                <div class="player-hand" id="player-hand"></div>
+                
+                <div class="btn-group btn-row" style="margin-top: 15px;">
+                    <button class="secondary" onclick="takeCardsAction()">Взять</button>
+                    <button onclick="finishRoundAction()">Отбой</button>
+                    <button class="danger" onclick="showGameResult('ВЫ СДАЛИСЬ!')">Сдаться</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. ЭКРАН: РЕЗУЛЬТАТЫ МАТЧА -->
+        <div id="screen-match-results" class="screen">
+            <h2>Результаты матча</h2>
+            <h1 style="color: #ff3333; font-size: 2.2rem; margin: 20px 0;">КОНЕЦ ИГРЫ</h1>
+            <p id="game-results-text">Раунд завершен.</p>
+            <div class="btn-group">
+                <button onclick="changeScreen('screen-difficulty')">Играть заново</button>
+                <button class="secondary" onclick="changeScreen('screen-main-menu')">В меню</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Подключаем JavaScript-код игры -->
+    <script src="Durak.js"></script>
+</body>
+</html>
