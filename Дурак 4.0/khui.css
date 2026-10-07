@@ -183,7 +183,6 @@ button.danger {
 .toast {
     animation: toastSlideUp 0.3s ease;
     backdrop-filter: blur(8px);
-    background: rgba(192, 41, 43, 0.95); /* Мягкий красный цвет предупреждения */
     border: 1px solid var(--gold-accent);
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
@@ -197,7 +196,25 @@ button.danger {
     width: auto;
 }
 
-/* Анимация красивого выезда снизу вверх */
+/* Зелёный тост: для победных моментов и успешных фаз */
+.toast.success {
+    background: rgba(46, 204, 113, 0.95);
+    border-color: #27ae60;
+}
+
+/* Красный тост: для ошибок игрока или истечения времени */
+.toast.error {
+    background: rgba(192, 41, 43, 0.95);
+    border-color: #962d22;
+}
+
+/* Золотой/Жёлтый тост: для ходов и пасов бота */
+.toast.info {
+    background: rgba(207, 181, 59, 0.95);
+    color: #0b1a15; /* Темный текст для лучшей читаемости на золотом фоне */
+    border-color: #b8860b;
+}
+
 @keyframes toastSlideUp {
     from {
         opacity: 0;
