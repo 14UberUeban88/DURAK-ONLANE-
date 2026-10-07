@@ -1,0 +1,423 @@
+:root {
+    --card-shadow: 0 8px 16px rgba(0,0,0,0.5);
+    --felt-dark: #0a1c17;
+    --gold-accent: #cfb53b;
+    --gold-glow: rgba(207, 181, 59, 0.3);
+    --table-green: #1b4d3e;
+    --text-light: #f5f5f5;
+}
+
+body {
+    align-items: center;
+    background-color: var(--felt-dark);
+    background-image: radial-gradient(circle at center, var(--table-green) 0%, #0e2b22 60%, var(--felt-dark) 100%);
+    color: var(--text-light);
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    justify-content: center;
+    margin: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+    padding: 0;
+}
+
+.screen-container {
+    backdrop-filter: blur(10px);
+    background: rgba(5, 15, 12, 0.9);
+    border: 2px solid var(--gold-accent);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 25px var(--gold-glow);
+    box-sizing: border-box;
+    max-width: 480px;
+    padding: 35px;
+    position: relative;
+    text-align: center;
+    transition: max-width 0.4s ease;
+    width: 90%;
+}
+
+.screen-container.game-table {
+    max-width: 950px;
+    min-height: 85vh;
+}
+
+.screen {
+    display: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    width: 100%;
+}
+
+.screen.active {
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important; /* Убирает сдвиг, который делал экран пустым */
+}
+
+
+#screen-match-results h2, 
+#screen-match-results p {
+    color: var(--text-light) !important;
+}
+
+h1, h2, h3 {
+    color: var(--gold-accent);
+    font-family: 'Georgia', serif;
+    letter-spacing: 3px;
+    margin-top: 0;
+    text-shadow: 2px 4px 8px rgba(0,0,0,0.6);
+    text-transform: uppercase;
+}
+
+p { 
+    color: #b3bba2; 
+    line-height: 1.6; 
+}
+
+input[type="text"], input[type="password"], select {
+    background: rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(207, 181, 59, 0.4);
+    border-radius: 10px;
+    box-sizing: border-box;
+    color: #fff;
+    font-size: 1rem;
+    margin: 12px 0;
+    padding: 14px;
+    width: 100%;
+}
+
+input:focus, select:focus {
+    border-color: var(--gold-accent);
+    box-shadow: 0 0 10px var(--gold-glow);
+    outline: none;
+}
+
+.btn-group { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 14px; 
+    margin-top: 25px; 
+}
+
+.btn-row { 
+    display: flex; 
+    gap: 12px; 
+}
+
+.btn-row button { 
+    flex: 1; 
+}
+
+button {
+    background: linear-gradient(135deg, #b8860b 0%, var(--gold-accent) 50%, #e6ca65 100%);
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+    color: #0b1a15;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: bold;
+    padding: 16px 24px;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    box-shadow: 0 8px 20px rgba(207, 181, 59, 0.4);
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+button.secondary {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: none;
+    color: #e0e0e0;
+}
+
+button.danger {
+    background: linear-gradient(135deg, #660000 0%, #990000 100%);
+    border: 1px solid #cc0000;
+    color: #fff;
+}
+
+.game-info-bar {
+    border-bottom: 1px solid rgba(207, 181, 59, 0.2);
+    color: var(--gold-accent);
+    display: flex;
+    font-weight: bold;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+}
+
+.playing-field {
+    align-items: center;
+    background: rgba(0,0,0,0.3);
+    border: 2px dashed rgba(207, 181, 59, 0.2);
+    border-radius: 15px;
+    display: flex;
+    flex-grow: 1;
+    gap: 25px;
+    justify-content: center;
+    margin: 20px 0;
+    min-height: 240px;
+    position: relative;
+}
+
+#toast-container {
+    align-items: center;
+    bottom: 20px; /* Сдвинули в самый низ экрана (под карты игрока) */
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    left: 50%;
+    position: absolute;
+    transform: translateX(-50%); /* Центрируем плашку тоста ровно по горизонтали */
+    width: 100%;
+    z-index: 9999; /* Чтобы тосты всплывали поверх нижних фонов */
+}
+
+.toast {
+    animation: toastSlideUp 0.3s ease;
+    backdrop-filter: blur(8px);
+    background: rgba(192, 41, 43, 0.95); /* Мягкий красный цвет предупреждения */
+    border: 1px solid var(--gold-accent);
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    color: var(--text-light);
+    font-size: 0.85rem;
+    font-weight: 600;
+    max-width: 320px;
+    padding: 10px 16px;
+    text-align: center;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    width: auto;
+}
+
+/* Анимация красивого выезда снизу вверх */
+@keyframes toastSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+.card-deck, .card {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+    color: #000;
+    display: flex;
+    font-size: 1.3rem;
+    font-weight: bold;
+    font-family: 'Georgia', serif;
+    height: 112px;
+    justify-content: center;
+    position: relative;
+    user-select: none;
+    width: 75px;
+}
+
+.card-deck {
+    background: repeating-linear-gradient(45deg, #7a0000, #7a0000 10px, #a30000 10px, #a30000 20px);
+    border: 2px solid #fff;
+    color: #fff;
+}
+
+.card.trump {
+    left: 25px;
+    position: absolute;
+    transform: rotate(90deg);
+    z-index: 1;
+}
+
+.card-center {
+    align-items: center;
+    display: flex;
+    font-size: 2.2rem;
+    height: 100%;
+    justify-content: center;
+    position: absolute;
+    width: 100%;
+    z-index: 1;
+}
+
+.card-corner {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.95rem;
+    line-height: 1.1;
+    position: absolute;
+    text-align: center;
+    z-index: 2;
+}
+
+.card-corner.bottom-right {
+    bottom: 5px;
+    right: 6px;
+    transform: rotate(180deg);
+}
+
+.card-corner.top-left {
+    left: 6px;
+    top: 5px;
+}
+
+
+.player-hand {
+    display: flex;
+    justify-content: center;
+    min-height: 140px;
+    padding-top: 20px;
+}
+
+.card.playable {
+    border: 1px solid #ccc;
+    cursor: pointer;
+    margin: 0 -12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card.playable:hover {
+    border-color: var(--gold-accent);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.6), 0 0 15px var(--gold-glow);
+    transform: translateY(-30px) rotate(0deg) scale(1.15) !important;
+    z-index: 99;
+}
+
+.avatar-box {
+    align-items: center;
+    background: rgba(0,0,0,0.5);
+    border: 2px solid var(--gold-accent);
+    border-radius: 50%;
+    display: flex;
+    font-size: 3rem;
+    height: 110px;
+    margin: 0 auto 15px;
+    width: 110px;
+}
+
+.game-controls-wrapper {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+    padding: 0 10px;
+    width: 100%;
+}
+
+.main-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.game-btn {
+    border-radius: 8px !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+    cursor: pointer;
+    font-size: 0.85rem !important;
+    font-weight: bold !important;
+    padding: 8px 16px !important;
+    text-transform: uppercase;
+    transition: all 0.2s ease;
+}
+
+.action-take, .action-finish {
+    background: #2ecc71 !important;
+    border: none !important;
+    color: white !important;
+}
+
+.action-take:disabled, .action-finish:disabled {
+    background: #bdc3c7 !important;
+    box-shadow: none !important;
+    color: #7f8c8d !important;
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none !important;
+}
+
+button.action-surrender {
+    background: linear-gradient(135deg, #d32f2f 0%, #e74c3c 100%) !important;
+    bottom: 25px !important;
+    border: 1px solid #c0392b !important;
+    color: white !important;
+    position: absolute !important;
+    right: 25px !important;
+    z-index: 999 !important;
+}
+
+button.action-surrender:hover {
+    box-shadow: 0 6px 15px rgba(231, 76, 60, 0.4) !important;
+    filter: brightness(1.2) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Контейнер для пары карт (атака + защита) */
+.battle-pair {
+    height: 140px; /* Увеличили высоту, чтобы помещались обе смещенные карты */
+    position: relative;
+    width: 75px;
+}
+
+/* Карта защиты (которая ложится сверху) */
+.defense-card {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+    left: 15px !important;
+    position: absolute !important;
+    top: 25px !important; /* Смещение вниз, оставляющее верх карты атаки видимым */
+    z-index: 2 !important;
+}
+
+/* Стили для визуального таймера */
+.timer-badge {
+    background: #c0392b;
+    border: 1px solid var(--gold-accent);
+    border-radius: 6px;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 4px 10px;
+}
+
+/* Компактный белый заголовок */
+.match-title {
+    color: var(--text-light) !important;
+    font-size: 1.5rem !important; /* Уменьшили размер */
+    margin: 15px 0 !important;
+}
+
+/* Базовый стиль для крупного текста результата */
+.match-result-text {
+    font-family: 'Georgia', serif;
+    font-size: 2.2rem !important; /* Сделали текст крупным */
+    font-weight: bold;
+    margin: 20px 0 !important;
+    text-transform: uppercase;
+}
+
+/* Зеленый цвет для победы */
+.match-result-text.win {
+    color: #2ecc71 !important;
+    text-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+}
+
+/* Красный цвет для проигрыша (оставляем для "Вы сдались" или поражения) */
+.match-result-text.lose {
+    color: #e74c3c !important;
+    text-shadow: 0 0 15px rgba(231, 76, 76, 0.4);
+}
+
+/* Золотой или серый цвет для ничьей */
+.match-result-text.draw {
+    color: var(--gold-accent) !important;
+}
